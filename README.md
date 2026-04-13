@@ -11,7 +11,7 @@ Your goal is to:
 - Evaluate what your system gets right and wrong
 - Reflect on how this mirrors real world AI recommenders
 
-Replace this paragraph with your own summary of what your version does.
+Real-world recommenders like Spotify combine user behavior patterns with song attributes. My version focuses purely on content-based filtering. Each song will be scored against a user profile using weighted features like genre, mood, and energy, then ranking all songs by that score to gather the best matches.
 
 ---
 
