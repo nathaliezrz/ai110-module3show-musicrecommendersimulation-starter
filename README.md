@@ -27,7 +27,18 @@ Some prompts to answer:
 - How does your `Recommender` compute a score for each song
 - How do you choose which songs to recommend
 
-You can include a simple diagram or bullet list if helpful.
+Each song gets a single number between 0 and 1 that represents how well it matches the user's taste profile. That number is built from six features, each contributing to a weighted total.
+
+Genre and mood are checked as simple matches if the song's genre matches the user's favorite genre, it earns full points for that feature. If not, it earns zero, and the same can be said about mood.
+
+Energy, valence, danceability, and acousticness are scored by closeness.
+
+Input          →        Process          →       Output
+User Profile        Score every song            Sort + slice
+(6 features)        (weighted formula)          (top K songs)
+                    repeated 18 times
+
+Potential Flaws: The algorithm may over prioritize mood when genre doesn't match.
 
 ---
 
@@ -74,6 +85,10 @@ Use this section to document the experiments you ran. For example:
 - What happened when you added tempo or valence to the score
 - How did your system behave for different types of users
 
+- Raising genre weight to +2.0 made it dominate ranking. The correct song still won in The Contradiction even with a conflicting mood.
+- Adding valence improved separation between songs that share a genre but feel emotionally different.
+- High-Energy Pop and Chill Lofi produced the most intuitive results. The Unicorn exposed that a single catalog match always wins regardless of numeric fit.
+
 ---
 
 ## Limitations and Risks
@@ -86,7 +101,8 @@ Examples:
 - It does not understand lyrics or language
 - It might over favor one genre or mood
 
-You will go deeper on this in your model card.
+- Only 18 songs. most genres have one entry, so niche users have no real choice.
+- Does not understand lyrics, context, or listening history.
 
 ---
 
@@ -101,6 +117,7 @@ Write 1 to 2 paragraphs here about what you learned:
 - about how recommenders turn data into predictions
 - about where bias or unfairness could show up in systems like this
 
+Recommenders reduce taste to numbers, and every design choice about what to measure and how to weight it quietly shapes who the system works for. Building this made it clear how bias enters through small decisions, like treating all numeric features equally even when users don't care about all of them.
 
 ---
 
@@ -117,6 +134,8 @@ Give your recommender a name, for example:
 
 > VibeFinder 1.0
 
+VibeMatcher 1.0
+
 ---
 
 ## 2. Intended Use
@@ -127,6 +146,8 @@ Give your recommender a name, for example:
 Example:
 
 > This model suggests 3 to 5 songs from a small catalog based on a user's preferred genre, mood, and energy level. It is for classroom exploration only, not for real users.
+
+VibeMatch 1.0 suggests up to 5 songs from an 18-song catalog based on a user's preferred genre.
 
 ---
 
@@ -140,6 +161,8 @@ Describe your scoring logic in plain language.
 
 Try to avoid code in this section, treat it like an explanation to a non programmer.
 
+Each song is scored by awarding points for a genre match (+2.0) and mood match (+1.0), then adding closeness scores for energy, valence, danceability, and acousticness (each 0–1), and ranking all songs from highest total to lowest.
+
 ---
 
 ## 4. Data
@@ -151,6 +174,8 @@ Describe your dataset.
 - What kinds of genres or moods are represented
 - Whose taste does this data mostly reflect
 
+The catalog contains 18 songs across 15 genres and 14 moods. Most genres appear only once and the dataset reflects predominantly popular music.
+
 ---
 
 ## 5. Strengths
@@ -161,6 +186,8 @@ You can think about:
 - Situations where the top results "felt right"
 - Particular user profiles it served well
 - Simplicity or transparency benefits
+
+The system produces accurate, explainable results for users whose preferred genre and mood are well-represented in the catalog, and every recommendation comes with a point-by-point breakdown of why it ranked where it did.
 
 ---
 
@@ -199,6 +226,8 @@ Examples:
 - Balance diversity of songs instead of always picking the closest match
 - Use more features, like tempo ranges or lyric themes
 
+I would add partial credit for related genres and moods and allow users to weight which features matter most to them.
+
 ---
 
 ## 9. Personal Reflection
@@ -209,3 +238,4 @@ A few sentences about what you learned:
 - How did building this change how you think about real music recommenders
 - Where do you think human judgment still matters, even if the model seems "smart"
 
+I learned that recommender systems are genuinely difficult to build, as it is hard to accurately capture what a user likes or cares about most without detailed information about their preferences. In the past, I have definitely felt that recommendation systems are not always great, and now I can see why that is sometimes the case.
